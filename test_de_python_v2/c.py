@@ -72,11 +72,29 @@ def pubmedmap(x):
     return x.id, x.title, date, x.journal
 
 
-d2 = datapubmed.rdd.map(pubmedmap)
+datapubmed = datapubmed.rdd.map(pubmedmap).toDF(schema)
 
-d2.toDF(schema).show()
+datapubmed.show()
 
 datapubmed.printSchema()
 
+datadrugs.createOrReplaceTempView('drug')
+drugs = spark.sql('SELECT * FROM drug')
+drugs.show()
+
+datapubmed.createOrReplaceTempView('pubmed')
+pubmeds = spark.sql('SELECT * FROM pubmed ')
+pubmeds.show()
+
+cross = spark.sql(
+    'select drug.atccode as drug_id, drug.drug as drug_name,pubmed.id as pubmed_id,pubmed.title as pubmed_title from drug cross join pubmed')
+
+
+def filter_cross(row):
+    return row.drug_name.upper() in row.pubmed_title.upper()
+
+
+cross = cross.rdd.filter(filter_cross)
+cross.toDF().show()
 
 spark.stop()
