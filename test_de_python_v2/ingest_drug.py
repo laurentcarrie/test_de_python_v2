@@ -16,7 +16,7 @@ def ingest(spark: SparkSession, datadir: Path):
     input_file: Path = datadir / 'drugs.csv'
     if not input_file.exists():
         raise Exception(f'input file does not exist {input_file}')
-    output_path: Path = datadir / 'parquet'
+    output_path: Path = datadir / 'parquet-drug'
 
     spark.read.option('header', True)\
         .csv(str(input_file))\
