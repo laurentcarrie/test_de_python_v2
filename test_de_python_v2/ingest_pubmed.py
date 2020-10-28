@@ -19,7 +19,8 @@ def _correct_date(x):
             date = datetime.datetime.strptime(x.date, format)
         except Exception:
             pass
-    return x.id, x.title, date, x.journal
+    id = int(x.id)
+    return id, x.title, date, x.journal
 
 
 def ingest(spark: SparkSession, datadir: Path):
@@ -38,7 +39,7 @@ def ingest(spark: SparkSession, datadir: Path):
         raise Exception(f'input file does not exist {input_file}')
     output_path: Path = datadir / 'parquet-pubmed'
 
-    schema = StructType([StructField('id', StringType(), True),
+    schema = StructType([StructField('id', IntegerType(), True),
                          StructField('title', StringType(), True),
                          StructField('date', DateType(), True),
                          StructField('journal', StringType(), True),
