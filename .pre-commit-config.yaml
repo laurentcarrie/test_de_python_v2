@@ -23,4 +23,4 @@ repos:
 -   repo: https://gitlab.com/pycqa/flake8
     rev: ''  # Use the sha / tag you want to point at
     hooks:
-    - id: flake8
+    -   id: flake8
