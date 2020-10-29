@@ -1,5 +1,6 @@
 appdirs==1.4.3
 attrs==20.2.0
+autopep8==1.5.4
 CacheControl==0.12.6
 certifi==2019.11.28
 cfgv==3.2.0

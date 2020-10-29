@@ -23,14 +23,13 @@ def find_references(spark: SparkSession, datadir: Path):
     def filter_cross(row):
         return row.drug_name.upper() in row.pubmed_title.upper()
 
-    cross = cross.rdd.filter(filter_cross).toLocalIterator()
+    cross = cross.rdd.filter(filter_cross)
 
-    result = {}
+    schema = StructType([StructField('drug_atccode', StringType(), False),
+                         StructField('drug_name', StringType(), True),
+                         StructField('pubmed_id', IntegerType(), True),
+                         StructField('pubmed_title', StringType(), True),
+                         StructField('pubmed_date', DateType(), True),
+                         ])
 
-    for row in cross:
-        if result.get(row.drug_atccode) is None:
-            result[row.drug_atccode] = {'name': row.drug_name, 'pubmeds': []}
-
-        result[row.drug_atccode]['pubmeds'].append(row.pubmed_id)
-
-    logging.info(result)
+    cross.toDF(schema).write.parquet(str(datadir / 'parquet-drug-pubmed'))

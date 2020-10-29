@@ -1,10 +1,12 @@
 import pytest
 from pyspark.sql import SparkSession
 from pathlib import Path
+import json
 import datetime
 from test_de_python_v2.ingest_drug import ingest as ingest_drug
 from test_de_python_v2.ingest_pubmed import ingest as ingest_pubmed
 from test_de_python_v2.find_references import find_references
+from test_de_python_v2.json_result import write_json
 
 
 class Test_ingest:
@@ -36,3 +38,9 @@ class Test_ingest:
         ingest_drug(spark, datadir)
         ingest_pubmed(spark, datadir)
         find_references(spark, datadir)
+        write_json(spark, datadir)
+        with open(str(datadir / 'result.json')) as fjson:
+            data = json.load(fjson)
+
+        assert set(data['S03AA']['pubmeds']) == {4, 5, 6}
+        assert data['V03AB']['pubmeds'] == [6]
