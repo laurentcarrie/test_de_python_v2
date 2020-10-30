@@ -1,14 +1,10 @@
+from pyspark import Row
 from pyspark.sql import SparkSession
-from pyspark import SparkContext, SparkConf
-import pyarrow.csv as pv
-import pyarrow.parquet as pq
 from pathlib import Path
-from pyspark.sql.types import IntegerType, StringType, StructField, StructType, DateType
 import datetime
 import json
-from typing import Callable, Any
+from typing import Callable, Any, Iterator
 from test_de_python_v2 import labels
-import logging
 
 
 def write_json(spark: SparkSession, datadir: Path):
@@ -19,10 +15,11 @@ def write_json(spark: SparkSession, datadir: Path):
                                     labels.json_pubmed_array_name: [], labels.json_clinical_trials_array_name: []}
 
     def iterate_on_references(parquet_path, array_name, id_getter, date_getter: Callable[[Any], datetime.date]):
-        iter = spark.read.parquet(str(parquet_path)).toLocalIterator()
+        item_iterator: Iterator[Row] = spark.read.parquet(
+            str(parquet_path)).toLocalIterator()
         count = 0
         max_allowed = 10000
-        for item in iter:
+        for item in item_iterator:
             count = count + 1
             if count > max_allowed:
                 raise Exception('too much data... bailing out')

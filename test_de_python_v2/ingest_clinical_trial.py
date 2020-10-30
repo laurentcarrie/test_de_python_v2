@@ -29,7 +29,7 @@ def _correct_date(item):
     return item.id, item.scientific_title, date, item.journal
 
 
-def ingest(spark: SparkSession, datadir: Path):
+def ingest(spark: SparkSession, csvfile: Path, parquetdir: Path):
     """
     in this function should be the code to retrieve csv file from its location
     by ftp, amazon s3, rest api, ...
@@ -40,10 +40,9 @@ def ingest(spark: SparkSession, datadir: Path):
     :return:
     """
 
-    input_file: Path = datadir / 'clinical_trials.csv'
-    if not input_file.exists():
-        raise Exception(f'input file does not exist {input_file}')
-    output_path: Path = datadir / labels.parquet_clinical_trial
+    if not csvfile.exists():
+        raise Exception(f'input file does not exist {csvfile}')
+    output_path: Path = parquetdir / labels.parquet_clinical_trial
 
     schema = StructType([StructField('id', StringType(), True),
                          StructField('scientific_title', StringType(), True),
@@ -52,7 +51,7 @@ def ingest(spark: SparkSession, datadir: Path):
                          ])
 
     spark.read.option('header', True)\
-        .csv(str(input_file))\
+        .csv(str(csvfile))\
         .rdd.map(_correct_date)\
         .toDF(schema)\
-        .write.parquet(str(output_path))
+        .write.parquet(path=str(output_path), mode='append')

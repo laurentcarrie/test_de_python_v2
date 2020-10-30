@@ -15,7 +15,7 @@ class Test_ingest:
 
     def test_ingest_drug(self, datadir):
         spark = SparkSession.builder.getOrCreate()
-        ingest_drug(spark, datadir)
+        ingest_drug(spark, datadir / 'drugs.csv', datadir)
         data = spark.read.parquet(str(datadir / labels.parquet_drug)).collect()
         assert len(data) == 7
         for row in data:
@@ -24,7 +24,7 @@ class Test_ingest:
 
     def test_ingest_pubmed(self, datadir):
         spark = SparkSession.builder.getOrCreate()
-        ingest_pubmed(spark, datadir)
+        ingest_pubmed(spark, datadir / 'pubmed.csv', datadir)
         data = spark.read.parquet(str(datadir / labels.parquet_pubmed)).collect()
         assert len(data) == 8
         for row in data:
@@ -37,7 +37,7 @@ class Test_ingest:
 
     def test_ingest_clinical_trial(self, datadir):
         spark = SparkSession.builder.getOrCreate()
-        ingest_clinical_trial(spark, datadir)
+        ingest_clinical_trial(spark, datadir / 'clinical_trials.csv', datadir)
         data = spark.read.parquet(str(datadir / labels.parquet_clinical_trial)).collect()
         assert len(data) == 8
         for row in data:
@@ -53,9 +53,9 @@ class Test_find_references:
 
     def test_find_references(self, datadir):
         spark = SparkSession.builder.getOrCreate()
-        ingest_drug(spark, datadir)
-        ingest_pubmed(spark, datadir)
-        ingest_clinical_trial(spark, datadir)
+        ingest_drug(spark, datadir / 'drugs.csv', datadir)
+        ingest_pubmed(spark, datadir / 'pubmed.csv', datadir)
+        ingest_clinical_trial(spark, datadir / 'clinical_trials.csv', datadir)
         find_references_drug_pubmed(spark, datadir)
         find_references_drug_clinical_trial(spark, datadir)
         write_json(spark, datadir)
