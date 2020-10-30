@@ -3,10 +3,12 @@ from pyspark.sql import SparkSession
 from pathlib import Path
 import json
 import datetime
+import logging
 from test_de_python_v2.ingest_drug import ingest as ingest_drug
 from test_de_python_v2.ingest_pubmed import ingest as ingest_pubmed
 from test_de_python_v2.ingest_clinical_trial import ingest as ingest_clinical_trial
-from test_de_python_v2.find_references import find_references_drug_pubmed, find_references_drug_clinical_trial
+from test_de_python_v2.find_references import find_references_drug_pubmed, \
+    find_references_drug_clinical_trial, find_references_drug_journal
 from test_de_python_v2.json_result import write_json
 from test_de_python_v2 import labels
 
@@ -50,6 +52,23 @@ class Test_ingest:
 
 
 class Test_find_references:
+
+    def test_find_references_drug_journal(spark: SparkSession, datadir):
+        spark = SparkSession.builder.getOrCreate()
+        ingest_drug(spark, datadir / 'drugs.csv', datadir)
+        ingest_pubmed(spark, datadir / 'pubmed.csv', datadir)
+        ingest_clinical_trial(spark, datadir / 'clinical_trials.csv', datadir)
+
+        find_references_drug_journal(spark, datadir)
+
+        df = spark.read.parquet(str(datadir / labels.parquet_drug_journal)).collect()
+
+        for item in df:
+            logging.info(f'{item.drug_atccode} ; {item.journal} ; {item.date}')
+
+        assert {(item.date, item.drug_atccode) for item in df if item.journal == 'Journal of emergency nursing'} == \
+               {(datetime.date(day=1, month=1, year=2020), 'A04AD'),
+                (datetime.date(day=1, month=1, year=2019), 'A04AD')}
 
     def test_find_references(self, datadir):
         spark = SparkSession.builder.getOrCreate()

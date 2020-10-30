@@ -4,6 +4,7 @@ parquet_pubmed = 'parquet-pubmed'
 parquet_clinical_trial = 'parquet-clinical_trial'
 parquet_drug_pubmed = 'parquet-drug_pubmed'
 parquet_drug_clinical_trial = 'parquet-drug_clinical_trial'
+parquet_drug_journal = 'parquet-drug_journal'
 
 # json output filename
 json_output_filename = 'result.json'
