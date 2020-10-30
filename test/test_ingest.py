@@ -62,6 +62,12 @@ class Test_find_references:
         with open(str(datadir / labels.json_output_filename)) as fjson:
             data = json.load(fjson)
 
-        assert set(data['S03AA'][labels.json_pubmed_array_name]) == {4, 5, 6}
-        assert data['V03AB'][labels.json_pubmed_array_name] == [6]
-        assert data['R01AD'][labels.json_clinical_trials_array_name] == ['NCT04153396']
+        assert set([item['id'] for item in data['S03AA']
+                    [labels.json_pubmed_array_name]]) == {4, 5, 6}
+        assert len(data['V03AB'][labels.json_pubmed_array_name]) == 1
+        assert data['V03AB'][labels.json_pubmed_array_name] == [
+            {'id': 6, 'date': datetime.date(day=1, month=1, year=2020).strftime(labels.json_date_format)}]
+        assert data['R01AD'][labels.json_clinical_trials_array_name] == [
+            {'id': 'NCT04153396', 'date': datetime.date(
+                day=1, month=1, year=2020).strftime(labels.json_date_format)}
+        ]

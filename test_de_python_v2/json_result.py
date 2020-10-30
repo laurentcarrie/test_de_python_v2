@@ -6,8 +6,8 @@ from pathlib import Path
 from pyspark.sql.types import IntegerType, StringType, StructField, StructType, DateType
 import datetime
 import json
-import test_de_python_v2.labels as labels
-
+from typing import Callable, Any
+from test_de_python_v2 import labels
 import logging
 
 
@@ -18,7 +18,7 @@ def write_json(spark: SparkSession, datadir: Path):
         result[row.drug_atccode] = {'name': row.drug_name,
                                     labels.json_pubmed_array_name: [], labels.json_clinical_trials_array_name: []}
 
-    def iterate_on_references(parquet_path, array_name, id_getter):
+    def iterate_on_references(parquet_path, array_name, id_getter, date_getter: Callable[[Any], datetime.date]):
         iter = spark.read.parquet(str(parquet_path)).toLocalIterator()
         count = 0
         max_allowed = 10000
@@ -29,15 +29,20 @@ def write_json(spark: SparkSession, datadir: Path):
             if result.get(item.drug_atccode) is None:
                 init_json_item(item)
 
-            result[item.drug_atccode][array_name].append(id_getter(item))
+            result[item.drug_atccode][array_name].append(
+                {'id': id_getter(item),
+                 'date': date_getter(item).strftime(labels.json_date_format)
+                 })
 
     iterate_on_references(parquet_path=datadir / 'parquet-drug-pubmed',
                           array_name=labels.json_pubmed_array_name,
-                          id_getter=lambda item: item.pubmed_id)
+                          id_getter=lambda item: item.pubmed_id,
+                          date_getter=lambda item: item.pubmed_date)
 
     iterate_on_references(parquet_path=datadir / 'parquet-drug-clinical_trial',
                           array_name=labels.json_clinical_trials_array_name,
-                          id_getter=lambda item: item.clinical_trial_id)
+                          id_getter=lambda item: item.clinical_trial_id,
+                          date_getter=lambda item: item.clinical_trial_date)
 
     with open(str(datadir / labels.json_output_filename), 'w') as fp:
         json.dump(result, fp)
