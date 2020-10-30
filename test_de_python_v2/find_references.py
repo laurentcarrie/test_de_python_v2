@@ -34,7 +34,7 @@ def find_references_drug_pubmed(spark: SparkSession, datadir: Path):
                          StructField('pubmed_date', DateType(), True),
                          ])
 
-    cross.toDF(schema).write.parquet(str(datadir / 'parquet-drug-pubmed'))
+    cross.toDF(schema).write.parquet(str(datadir / labels.parquet_drug_pubmed))
 
 
 def find_references_drug_clinical_trial(spark: SparkSession, datadir: Path):
@@ -63,4 +63,4 @@ def find_references_drug_clinical_trial(spark: SparkSession, datadir: Path):
                          StructField('clinical_trial_date', DateType(), True),
                          ])
 
-    cross.toDF(schema).write.parquet(str(datadir / 'parquet-drug-clinical_trial'))
+    cross.toDF(schema).write.parquet(str(datadir / labels.parquet_drug_clinical_trial))

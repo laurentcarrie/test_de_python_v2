@@ -34,12 +34,12 @@ def write_json(spark: SparkSession, datadir: Path):
                  'date': date_getter(item).strftime(labels.json_date_format)
                  })
 
-    iterate_on_references(parquet_path=datadir / 'parquet-drug-pubmed',
+    iterate_on_references(parquet_path=datadir / labels.parquet_drug_pubmed,
                           array_name=labels.json_pubmed_array_name,
                           id_getter=lambda item: item.pubmed_id,
                           date_getter=lambda item: item.pubmed_date)
 
-    iterate_on_references(parquet_path=datadir / 'parquet-drug-clinical_trial',
+    iterate_on_references(parquet_path=datadir / labels.parquet_drug_clinical_trial,
                           array_name=labels.json_clinical_trials_array_name,
                           id_getter=lambda item: item.clinical_trial_id,
                           date_getter=lambda item: item.clinical_trial_date)
