@@ -21,7 +21,7 @@ def _correct_date(item):
         try:
             date = datetime.datetime.strptime(item.date, format)
             break
-        except Exception:
+        except ValueError:
             pass
     else:
         logging.warning(f"could not convert date '{item.date}', replace it by None")
