@@ -10,28 +10,23 @@ from test_de_python_v2 import labels
 
 def _correct_date(item):
     """
-    we saw in the provided sql files that date could be provided in different formats.
+    we saw in the provided csv files that date could be provided in different formats.
     this function handles the two formats, and also the conversion from string to date
     :param item:
     :return:
     """
-    possible_formats = ['%d/%m/%Y', '%Y-%m-%d']
+    possible_formats = ['%d/%m/%Y', '%Y-%m-%d', '%d %B %Y']
     date = None
     for format in possible_formats:
         try:
             date = datetime.datetime.strptime(item.date, format)
             break
-        except ValueError:
+        except Exception:
             pass
     else:
         logging.warning(f"could not convert date '{item.date}', replace it by None")
 
-    try:
-        id = int(item.id)
-    except ValueError:
-        raise Exception(f'found a non integer id {item.id}')
-
-    return id, item.title, date, item.journal
+    return item.id, item.scientific_title, date, item.journal
 
 
 def ingest(spark: SparkSession, datadir: Path):
@@ -45,13 +40,13 @@ def ingest(spark: SparkSession, datadir: Path):
     :return:
     """
 
-    input_file: Path = datadir / 'pubmed.csv'
+    input_file: Path = datadir / 'clinical_trials.csv'
     if not input_file.exists():
         raise Exception(f'input file does not exist {input_file}')
-    output_path: Path = datadir / labels.parquet_pubmed
+    output_path: Path = datadir / labels.parquet_clinical_trial
 
-    schema = StructType([StructField('id', IntegerType(), True),
-                         StructField('title', StringType(), True),
+    schema = StructType([StructField('id', StringType(), True),
+                         StructField('scientific_title', StringType(), True),
                          StructField('date', DateType(), True),
                          StructField('journal', StringType(), True),
                          ])
