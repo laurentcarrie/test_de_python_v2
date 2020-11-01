@@ -1,7 +1,7 @@
 #!/bin/bash
 
-# generate data : a csv file. The argument is the number of row
-python generate_data.py 100000
+# generate data : a csv file.
+python generate_data.py --max_transactions 10 --max_clients 2 --max_products 3
 
 # create the database schema, drop existing tables
 psql -f init.sql

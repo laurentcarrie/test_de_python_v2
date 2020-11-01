@@ -10,9 +10,9 @@ def main():
         next(reader)
         for row in reader:
             try:
-                date = datetime.datetime.strptime(row[0], "'%d-%m-%Y'")
-                price = float(row[1])
-                qty = float(row[2])
+                date = datetime.datetime.strptime(row[1], '%d-%m-%Y')
+                price = float(row[2])
+                qty = float(row[3])
                 collected_data_with_python[date] = price * \
                     qty + collected_data_with_python.get(date, 0)
             except Exception as e:

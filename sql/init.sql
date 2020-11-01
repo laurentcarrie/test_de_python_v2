@@ -17,4 +17,6 @@ product_name text
 ) ;
 
 
-\copy transaction (date,prod_price,prod_qty) from transaction.csv delimiter ';' csv header ;
+\copy transaction (order_id,date,prod_price,prod_qty,client_id,prod_id) from transaction.csv delimiter ';' csv header ;
+
+\copy nomenclature (product_id,product_type,product_name) from nomenclature.csv delimiter ';' csv header ;
