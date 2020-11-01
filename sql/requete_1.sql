@@ -21,4 +21,4 @@ group by date
 order by date
 ;
 
-\copy affaire (date,chiffre_affaires) to result.csv  delimiter ';' ;
+\copy affaire (date,chiffre_affaires) to result_1.csv  delimiter ';' ;

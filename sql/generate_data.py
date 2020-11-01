@@ -23,7 +23,7 @@ def main(max_transactions, max_clients, max_products):
             fout.write(f'{product_id};{product_type};{product_name}\n')
 
     with open('transaction.csv', 'w') as fout:
-        fout.write('date,prod_price,prod_qty,client_id,prod_id\n')
+        fout.write('order_id,date,prod_price,prod_qty,client_id,prod_id\n')
         for i in range(max_transactions):
             order_id = i + 1
             date = datetime.date(day=1, month=1, year=2019) + \
