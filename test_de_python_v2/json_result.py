@@ -12,7 +12,8 @@ def write_json(spark: SparkSession, datadir: Path):
 
     def init_json_item(row):
         result[row.drug_atccode] = {'name': row.drug_name,
-                                    labels.json_pubmed_array_name: [], labels.json_clinical_trials_array_name: []}
+                                    labels.json_pubmed_array_name: [], labels.json_clinical_trials_array_name: [],
+                                    labels.json_journal_array_name: []}
 
     def iterate_on_references(parquet_path, array_name, id_getter, date_getter: Callable[[Any], datetime.date]):
         item_iterator: Iterator[Row] = spark.read.parquet(
@@ -22,7 +23,7 @@ def write_json(spark: SparkSession, datadir: Path):
         for item in item_iterator:
             count = count + 1
             if count > max_allowed:
-                raise Exception('too much data... bailing out')
+                raise Exception('too much data to write a json file... bailing out')
             if result.get(item.drug_atccode) is None:
                 init_json_item(item)
 
@@ -40,6 +41,11 @@ def write_json(spark: SparkSession, datadir: Path):
                           array_name=labels.json_clinical_trials_array_name,
                           id_getter=lambda item: item.clinical_trial_id,
                           date_getter=lambda item: item.clinical_trial_date)
+
+    iterate_on_references(parquet_path=datadir / labels.parquet_drug_journal,
+                          array_name=labels.json_journal_array_name,
+                          id_getter=lambda item: item.journal,
+                          date_getter=lambda item: item.date)
 
     with open(str(datadir / labels.json_output_filename), 'w') as fp:
         json.dump(result, fp)

@@ -16,3 +16,4 @@ json_date_format = '%d/%m/%Y'
 # array name for items in json output file
 json_pubmed_array_name = 'pubmeds'
 json_clinical_trials_array_name = 'clinical_trials'
+json_journal_array_name = 'journaux'

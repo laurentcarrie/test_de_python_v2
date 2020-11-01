@@ -14,6 +14,11 @@ the project is not publicly available in pip repositories, you have to clone it 
     # activate it
     . .venv/bin/activate
 
+    # the psycopg2 python package needs python-dev
+    # we need it for the sql tests (second part)
+    # if it is missing pip install psycopg2 will complain
+    # sudo apt install python3-dev5
+
     # install requirements
     pip install -r requirements.txt
 

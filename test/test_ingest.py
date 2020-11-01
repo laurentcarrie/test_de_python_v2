@@ -77,6 +77,7 @@ class Test_find_references:
         ingest_clinical_trial(spark, datadir / 'clinical_trials.csv', datadir)
         find_references_drug_pubmed(spark, datadir)
         find_references_drug_clinical_trial(spark, datadir)
+        find_references_drug_journal(spark, datadir)
         write_json(spark, datadir)
         with open(str(datadir / labels.json_output_filename)) as fjson:
             data = json.load(fjson)
