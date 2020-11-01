@@ -8,41 +8,24 @@ CREATE TABLE client_interest (
    ventes_deco int
 ) ;
 
-DROP FUNCTION xxx ;
-CREATE FUNCTION xxx(cid integer, pt text)
-RETURNS text AS $$
+drop table xxx ;
+CREATE TABLE xxx (
+  client_id int,
+  product_type text,
+  order_count int
+) ;
 
-DECLARE result_count integer;
-BEGIN
-    with tmp as (
-        select * from transaction
-        join nomenclature on transaction.prod_id = nomenclature.product_id
-        where transaction.client_id = cid and nomenclature.product_type like pt
-    )
-    select count(order_id) into result_count from tmp
-    group by (client_id,product_type) ;
-    return result_count ;
-END;
-$$
-    LANGUAGE plpgsql;
+
 
 
 
 with tmp as (
-select * from transaction
- join nomenclature on transaction.prod_id = nomenclature.product_id
+        select * from transaction
+        join nomenclature on transaction.prod_id = nomenclature.product_id
 )
-select   count(order_id) from tmp
-group by (client_id,product_type)
-order by client_id
-;
+    insert into xxx (client_id,product_type,order_count) (select client_id,product_type,count(order_id) from tmp
+    group by (client_id,product_type)) ;
 
-
-
-select distinct(client_id),
-    xxx(client_id,'MEUBLE') as ventes_meuble,
-    xxx(client_id,'DECO') as ventes_deco
-    from transaction  ;
 
 
 CREATE TABLE ct(id SERIAL, rowid TEXT, attribute TEXT, value TEXT);
@@ -63,4 +46,13 @@ FROM crosstab(
    from ct
    where attribute = ''att2'' or attribute = ''att3''
    order by 1,2')
-AS ct(row_name text, category_1 text, category_2 text, category_3 text);
+AS ct(row_name text, blah_blah text, category_2 text, category_3 text);
+
+
+SELECT *
+FROM crosstab(
+  'select client_id, product_type, order_count
+   from xxx
+   where product_type = ''MEUBLE'' or product_type = ''DECO''
+   order by 1,2')
+AS xxx(client_id int, vente_meuble int,vente_deco int);
