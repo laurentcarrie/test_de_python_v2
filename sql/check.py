@@ -5,18 +5,23 @@ import csv
 
 def main():
     collected_data_with_python = {}
-    with open('transaction.json', 'r') as fin:
-        j = json.load(fin)
-        for row in j:
-            date = datetime.datetime.strptime(row[0], '%d-%m-%Y')
-            price = row[1]
-            qty = row[2]
-            old = collected_data_with_python.get(date, 0)
-            collected_data_with_python[date] = old + price * qty
+    with open('transaction.csv', newline='\n') as csvfile:
+        reader = csv.reader(csvfile, delimiter=';')
+        next(reader)
+        for row in reader:
+            try:
+                date = datetime.datetime.strptime(row[0], "'%d-%m-%Y'")
+                price = float(row[1])
+                qty = float(row[2])
+                collected_data_with_python[date] = price * \
+                    qty + collected_data_with_python.get(date, 0)
+            except Exception as e:
+                print(f'could not understand row {row}')
+                raise e
 
     collected_data_with_sql = {}
     with open('result.csv', newline='\n') as csvfile:
-        reader = csv.reader(csvfile, delimiter=';', quotechar='|')
+        reader = csv.reader(csvfile, delimiter=';')
         for row in reader:
             try:
                 date = datetime.datetime.strptime(row[0], '%Y-%m-%d')

@@ -16,9 +16,6 @@ def main(max_rows, here: Path):
         prod_qty = random.randint(1, 10)
         rows.append([date.strftime(json_date_format), prod_price, prod_qty])
 
-    with open(str(here / 'transaction.json'), 'w') as fout:
-        json.dump(rows, fout)
-
     with open(str(here / 'transaction.csv'), 'w') as fout:
         fout.write('date,prod_price,prod_qty\n')
         for row in rows:
