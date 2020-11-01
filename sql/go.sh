@@ -1,7 +1,7 @@
 #!/bin/bash
 
 # generate random data in transaction.csv and nomenclature.csv
-python generate_data.py --max_transactions 10 --max_clients 2 --max_products 3
+python generate_data.py --max_transactions 100000 --max_clients 100 --max_products 20
 
 # create the database schema, drop existing tables, load the csv data into sql tables
 psql -f init.sql

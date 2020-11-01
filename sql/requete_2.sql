@@ -1,34 +1,42 @@
 CREATE EXTENSION tablefunc;
 
+drop table if exists client_interest ;
 
-drop table client_to_vente ;
-CREATE TABLE client_to_vente (
+CREATE TABLE client_interest (
+  client_id int,
+  ventes_meuble int,
+   ventes_deco int
+) ;
+
+drop table xxx ;
+CREATE TABLE xxx (
   client_id int,
   product_type text,
   order_count int
 ) ;
 
-with xxx as (
-    with tmp as (
-        select * from transaction
-        join nomenclature on transaction.prod_id = nomenclature.product_id
-    )
-    select client_id,product_type,count(order_id) as order_count from tmp
-    group by (client_id,product_type)
-    )
-select * from xxx ;
+
+
 
 
 with tmp as (
-SELECT *
+        select * from transaction
+        join nomenclature on transaction.prod_id = nomenclature.product_id
+)
+    insert into xxx (client_id,product_type,order_count) (select client_id,product_type,count(order_id) from tmp
+    group by (client_id,product_type)) ;
+
+
+
+insert into client_interest
+SELECT client_id,ventes_meuble,ventes_deco
 FROM crosstab(
   'select client_id, product_type, order_count
    from xxx
    where product_type = ''MEUBLE'' or product_type = ''DECO''
-   order by 1,2')
-AS xxx(client_id int, vente_meuble int,vente_deco int)
-) insert into client_to_vente select client_id,vente_meuble,vente_deco from tmp ;
+   order by 1,2',
+  $$VALUES ('MEUBLE'), ('DECO')$$
+)
+AS (client_id int, ventes_meuble int,ventes_deco int);
 
--- select * from client_to_vente ;
-
--- \copy client_to_vente (client_id,vente_meuble,vente_deco) to result_2.csv  delimiter ';' ;
+\copy client_interest (client_id,ventes_meuble,ventes_deco) to result_2.csv  delimiter ';' ;
